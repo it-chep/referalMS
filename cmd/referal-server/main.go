@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	"os"
+	"referalMS/internal/router"
 )
 
 const (
@@ -18,8 +19,8 @@ func main() {
 
 	logger.Info("start app")
 
-	router := NewRouter()
-	router.InitRouter()
+	r := router.NewRouter(logger)
+	r.InitRouter()
 	// Auth middleware
 	//	TODO init repo
 	//	TODO init service
