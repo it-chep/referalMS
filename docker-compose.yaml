@@ -1,0 +1,64 @@
+version: "3.6"
+
+services:
+  referal-postgres:
+    image: postgres:15.2-bullseye
+    shm_size: 1g
+    container_name: referal-postgres
+    command: [ "postgres", "-c", "log_statement=all" ]
+    networks:
+      - referal-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_INITDB_WALDIR=/var/log/pg_logs
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    expose:
+      - ${DB_PORT}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+
+  referal-app:
+    build: .
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    container_name: referal-app
+    networks:
+      - referal-network
+    depends_on:
+      - referal-postgres
+    environment:
+      - C_FORCE_ROOT='true'
+      - PYTHONUNBUFFERED=1
+      - LOCAL_PYTEST=1
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - DEBUG=${DEBUG}
+      - ENVIRONMENT_TYPE=docker
+
+  pgadmin:
+    container_name: referal-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+
+
+networks:
+  referal-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
