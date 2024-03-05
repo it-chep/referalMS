@@ -1,4 +1,4 @@
-package create_referal
+package create_user
 
 import (
 	"context"
@@ -8,5 +8,5 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/mock.go -package mocks . WriteRepo
 
 type WriteRepo interface {
-	CreateReferal(ctx context.Context, referal entity.Referal, admin entity.Admin) (referalId int64, err error)
+	CreateUser(ctx context.Context, user entity.User, admin entity.Admin) (userID int64, err error)
 }

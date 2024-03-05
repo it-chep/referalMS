@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,38 +15,46 @@ type CreateReferalResponse struct {
 	ReferalLink string `json:"referal_link"`
 }
 
-func (api *ApiV1) CreateReferal() http.HandlerFunc {
+func (api *ApiV1) CreateReferal(ctx context.Context) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		const op = "controller.controller.v1.CreateReferal"
-
+		var resp CreateReferalResponse
 		var referalUser dto.ReferalUserDTO
 
 		externalAdminDTO, _ := request.Context().Value("admin").(dto.ExternalAdminDTO)
-		api.Logger.Info("Admin:", externalAdminDTO)
+		api.logger.Info("Admin:", externalAdminDTO, op)
 
 		if err := json.NewDecoder(request.Body).Decode(&referalUser); err != nil {
-			api.Logger.Error(fmt.Sprintf("Error while parsing JSON %s", op))
+			api.logger.Error(fmt.Sprintf("Error while parsing JSON %s", op))
 			http.Error(writer, "Failed to parse JSON", http.StatusBadRequest)
 			return
 		}
 
-		// Service logic
+		referalLink, err := api.referalService.RegisterNewReferal(ctx, referalUser, externalAdminDTO)
+		if err != nil {
+			api.logger.Error(fmt.Sprintf("error while creating referal. Error: %s OP: %s", err, op))
+			http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 
-		status := response.StatusOk
-		resp := CreateReferalResponse{
-			Status:      status,
-			ReferalLink: "SomeString",
+		resp = CreateReferalResponse{
+			Status:      response.StatusOk,
+			ReferalLink: referalLink,
 		}
 
 		jsonData, err := json.Marshal(resp)
 		if err != nil {
-			api.Logger.Error(fmt.Sprintf("Error while serializing JSON %s", op))
+			api.logger.Error(fmt.Sprintf("Error while serializing JSON %s", op))
 			http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
 		writer.Header().Set("Content-Type", "application/json")
 
-		writer.Write(jsonData)
+		_, err = writer.Write(jsonData)
+		if err != nil {
+			api.logger.Error(fmt.Sprintf("SERVER ERROR %s, op: %s", err, op))
+			return
+		}
 	}
 }

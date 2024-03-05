@@ -11,7 +11,7 @@ import (
 
 type Config struct {
 	Env           string        `yaml:"env" env-default:"local"`
-	StoragePath   string        `yaml:"storage_path" env-required:"true"`
+	StorageConfig StorageConfig `yaml:"storage"`
 	HTTPServer    HTTPServer    `yaml:"http_server"`
 	ReferalConfig ReferalConfig `yaml:"referals_config"`
 }
@@ -22,6 +22,16 @@ type HTTPServer struct {
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
 	User        string        `yaml:"user" env-required:"true"`
 	Password    string        `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
+}
+
+type StorageConfig struct {
+	Host         string        `yaml:"host"`
+	Port         string        `yaml:"port"`
+	Database     string        `yaml:"database"`
+	User         string        `yaml:"user"`
+	Password     string        `yaml:"password"`
+	MaxRetry     int           `yaml:"max_retry"`
+	RetryTimeout time.Duration `yaml:"retry_timeout"`
 }
 
 type ReferalConfig struct {

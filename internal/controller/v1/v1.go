@@ -2,14 +2,32 @@ package v1
 
 import (
 	"log/slog"
+	"referalMS/internal/config"
+	"referalMS/internal/controller"
 )
 
 type ApiV1 struct {
-	Logger *slog.Logger
+	adminService   controller.AdminService
+	referalService controller.ReferalService
+	userService    controller.UserService
+	cfg            config.Config
+	logger         *slog.Logger
 }
 
-func NewApiV1(logger *slog.Logger) *ApiV1 {
+func NewApiV1(
+	adminService controller.AdminService,
+	referalService controller.ReferalService,
+	userService controller.UserService,
+	cfg config.Config,
+	logger *slog.Logger,
+) *ApiV1 {
+
 	return &ApiV1{
-		Logger: logger,
+		adminService:   adminService,
+		referalService: referalService,
+		userService:    userService,
+		cfg:            cfg,
+		logger:         logger,
 	}
+
 }

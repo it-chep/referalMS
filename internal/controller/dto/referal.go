@@ -13,8 +13,15 @@ type ReferalStatisticDTO struct {
 	TgId int64 `json:"tg_id"`
 }
 
-// GetWinnersDTO get top referals DTO
+// GetWinnersDTO get top referal DTO
 type GetWinnersDTO struct {
 	Limit        int `json:"limit"`
 	DaysInterval int `json:"days_interval"`
+}
+
+type GetReferalStatisticDTO struct {
+	Status    string `json:"status"`
+	Error     string `json:"error"`
+	AllUsers  int64  `json:"all_users"`
+	LastNDays int64  `json:"last_n_days"`
 }

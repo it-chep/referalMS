@@ -1,15 +1,20 @@
 package create_referal
 
-import "context"
+import (
+	"context"
+	"referalMS/internal/domain/entity"
+)
 
-type CreateRferalUseCase struct {
+type CreateReferalUseCase struct {
 	repo WriteRepo
 }
 
-func NewCreateRferalUseCase(repo WriteRepo) CreateRferalUseCase {
-	return CreateRferalUseCase{repo: repo}
+func NewCreateReferalUseCase(repo WriteRepo) CreateReferalUseCase {
+	return CreateReferalUseCase{
+		repo: repo,
+	}
 }
 
-func (uc CreateRferalUseCase) Create(ctx context.Context) error {
-	return uc.repo.Create(ctx)
+func (uc CreateReferalUseCase) Execute(ctx context.Context, referal entity.Referal, admin entity.Admin) (referalId int64, err error) {
+	return uc.repo.CreateReferal(ctx, referal, admin)
 }

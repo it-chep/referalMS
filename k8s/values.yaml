@@ -7,6 +7,15 @@ http_server:
   user: "maxim_jordan"
   password: "1231323"
 
+storage:
+  host: {{ .Values.DB_HOST }}
+  post: {{ .Values.DB_PORT }}
+  database: {{ .Values.DB_NAME }}
+  user: {{ .Values.DB_USER }}
+  password: {{ .Values.DB_PASSWORD }}
+  max_retry: 5
+  retry_timeout: 5s
+
 referals_config:
   winners:
     default_limit: 3

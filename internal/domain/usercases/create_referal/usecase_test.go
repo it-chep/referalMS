@@ -13,9 +13,9 @@ func TestCreateReferalUseCase_Create(t *testing.T) {
 	t.Run("test creating", func(t *testing.T) {
 		t.Parallel()
 		mockRepo := mocks.NewMockWriteRepo(gomock.NewController(t))
-		uc := CreateRferalUseCase{repo: mockRepo}
+		uc := CreateReferalUseCase{repo: mockRepo}
 		mockRepo.EXPECT().Create(gomock.Any()).Return(nil)
 
-		require.NoError(t, uc.Create(context.Background()))
+		require.NoError(t, uc.Execute(context.Background()))
 	})
 }
