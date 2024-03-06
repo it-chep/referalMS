@@ -21,7 +21,7 @@ import (
 
 func (app *App) InitControllers(ctx context.Context) *App {
 	app.controller.restController = controller.NewRestController(
-		app.services.adminService, app.services.referalService, app.services.userService, *app.config, app.logger,
+		&app.services.adminService, app.services.referalService, app.services.userService, *app.config, app.logger,
 	)
 	app.controller.restController.InitController(ctx)
 

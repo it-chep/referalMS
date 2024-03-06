@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"referalMS/internal/config"
 	"referalMS/internal/controller"
-	adminController "referalMS/internal/controller/admin"
 	v1 "referalMS/internal/controller/v1"
 	"referalMS/internal/domain/service/admin"
 	"referalMS/internal/domain/service/referal"
@@ -24,7 +23,7 @@ type controllers struct {
 type services struct {
 	userService    v1.UserService
 	referalService v1.ReferalService
-	adminService   adminController.AdminService
+	adminService   admin.AdminService
 }
 
 type useCases struct {

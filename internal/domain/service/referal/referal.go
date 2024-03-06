@@ -23,9 +23,9 @@ func NewReferalService(
 	readRepo ReadReferalStorage,
 	adminService admin.AdminService,
 	logger *slog.Logger,
-) ReferalService {
+) *ReferalService {
 
-	return ReferalService{
+	return &ReferalService{
 		CreateReferalUseCase: createReferalUseCase,
 		ReadRepo:             readRepo,
 		AdminService:         adminService,
