@@ -14,5 +14,5 @@ type ReadUserStorage interface {
 }
 
 type CreateUserUseCase interface {
-	Execute(ctx context.Context, referal entity.Referal, user entity.User, admin entity.Admin) (userId int64, err error)
+	Execute(ctx context.Context, user entity.User, admin entity.Admin) (userId int64, err error)
 }

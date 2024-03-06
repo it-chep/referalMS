@@ -8,38 +8,23 @@ import (
 	"log/slog"
 	"net/http"
 	"referalMS/internal/config"
-	admin "referalMS/internal/controller/admin"
-	"referalMS/internal/controller/dto"
+	"referalMS/internal/controller/admin"
 	v1 "referalMS/internal/controller/v1"
-	"referalMS/internal/domain/entity"
 )
-
-type UserService interface {
-	RegisterNewUser(ctx context.Context)
-}
-
-type AdminService interface {
-	GetWinners(ctx context.Context, dto dto.ExternalAdminDTO, filters dto.GetWinnersDTO) (winners []entity.Referal, err error)
-}
-
-type ReferalService interface {
-	RegisterNewReferal(ctx context.Context, dto dto.ReferalUserDTO, adto dto.ExternalAdminDTO) (referalLink string, err error)
-	GetReferalStatistic(ctx context.Context, dto dto.ReferalStatisticDTO, adto dto.ExternalAdminDTO) (allUsers, lastNDays int64, err error)
-}
 
 type RestController struct {
 	router         *chi.Mux
-	adminService   AdminService
-	referalService ReferalService
-	userService    UserService
+	adminService   admin.AdminService
+	referalService v1.ReferalService
+	userService    v1.UserService
 	cfg            config.Config
 	logger         *slog.Logger
 }
 
 func NewRestController(
-	adminService AdminService,
-	referalService ReferalService,
-	userService UserService,
+	adminService admin.AdminService,
+	referalService v1.ReferalService,
+	userService v1.UserService,
 	cfg config.Config,
 	logger *slog.Logger,
 ) *RestController {
@@ -66,7 +51,7 @@ func (r *RestController) InitController(ctx context.Context) {
 	apiV1 := v1.NewApiV1(r.adminService, r.referalService, r.userService, r.cfg, r.logger)
 	apiV1Router.Use(apiV1.GetAdminMiddleware)
 
-	admn := admin.NewAdmin(r.logger)
+	admn := admin.NewAdmin(r.adminService, r.logger)
 
 	apiV1Router.Post("/new_referal/", apiV1.CreateReferal(ctx))
 	apiV1Router.Post("/new_user/", apiV1.CreateUser(ctx))
@@ -78,7 +63,7 @@ func (r *RestController) InitController(ctx context.Context) {
 	})
 
 	r.router.Route("/admin", func(r chi.Router) {
-		r.Post("/", admn.CreateAdmin())
+		r.Post("/", admn.CreateAdmin(ctx))
 	})
 
 	r.logger.Info(fmt.Sprintf("init controller %s", op))

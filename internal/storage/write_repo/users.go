@@ -2,13 +2,13 @@ package write_repo
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"referalMS/internal/domain/entity"
+	"referalMS/pkg/client/postgres"
 )
 
 type WriteUserStorage struct {
-	client *pgxpool.Pool
+	client postgres.Client
 	logger *slog.Logger
 }
 
@@ -31,7 +31,7 @@ func (u *WriteUserStorage) CreateUser(ctx context.Context, user entity.User, adm
 	return userID, nil
 }
 
-func NewUserStorage(client *pgxpool.Pool, logger *slog.Logger) *WriteUserStorage {
+func NewUserStorage(client postgres.Client, logger *slog.Logger) *WriteUserStorage {
 	return &WriteUserStorage{
 		client: client,
 		logger: logger,

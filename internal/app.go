@@ -2,15 +2,19 @@ package internal
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"net/http"
 	"referalMS/internal/config"
 	"referalMS/internal/controller"
+	adminController "referalMS/internal/controller/admin"
+	v1 "referalMS/internal/controller/v1"
 	"referalMS/internal/domain/service/admin"
 	"referalMS/internal/domain/service/referal"
 	"referalMS/internal/domain/service/user"
-	"referalMS/internal/storage/write_repo"
+	"referalMS/internal/domain/usercases/create_admin"
+	"referalMS/internal/domain/usercases/create_referal"
+	"referalMS/internal/domain/usercases/create_user"
+	"referalMS/pkg/client/postgres"
 )
 
 type controllers struct {
@@ -18,22 +22,24 @@ type controllers struct {
 }
 
 type services struct {
-	userService    user.UserService
-	referalService referal.ReferalService
-	adminService   admin.AdminService
+	userService    v1.UserService
+	referalService v1.ReferalService
+	adminService   adminController.AdminService
 }
 
 type useCases struct {
-	createReferalUseCase
-	createUserUseCase
+	createReferalUseCase referal.CreateReferalUseCase
+	createUserUseCase    user.CreateUserUseCase
+	createAdminUseCase   admin.CreateAdminUseCase
 }
 
 type storages struct {
 	adminReadStorage    admin.ReadAdminStorage
+	adminWriteStorage   create_admin.WriteRepo
 	referalReadStorage  referal.ReadReferalStorage
-	referalWriteStorage write_repo.WriteReferalStorage
+	referalWriteStorage create_referal.WriteRepo
 	userReadStorage     user.ReadUserStorage
-	userWriteStorage    write_repo.WriteUserStorage
+	userWriteStorage    create_user.WriteRepo
 }
 
 type App struct {
@@ -43,7 +49,7 @@ type App struct {
 	services   services
 	storages   storages
 	useCases   useCases
-	pgxClient  *pgxpool.Pool
+	pgxClient  postgres.Client
 	server     *http.Server
 }
 

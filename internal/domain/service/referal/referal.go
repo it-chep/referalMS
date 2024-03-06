@@ -34,8 +34,8 @@ func NewReferalService(
 }
 
 func (s *ReferalService) RegisterNewReferal(ctx context.Context, dto dto.ReferalUserDTO, adto dto.ExternalAdminDTO) (referalLink string, err error) {
-	adminEntity := s.AdminService.GetAdmin(ctx, adto)
-	if adminEntity == (entity.Admin{}) {
+	adminEntity, err := s.AdminService.GetAdmin(ctx, adto)
+	if err != nil {
 		return "", fmt.Errorf("adminEntity not found")
 	}
 	s.logger.Info("adminEntity was found, trying to register new referal")
@@ -56,14 +56,7 @@ func (s *ReferalService) RegisterNewReferal(ctx context.Context, dto dto.Referal
 	)
 	s.logger.Info("link was generated successfully")
 
-	// Create new referral entity
-	newReferral := entity.NewReferal(
-		dto.TgId,
-		adminEntity.GetId(),
-		dto.Name,
-		entity.WithRefReferalLink(referalLink),
-		entity.WithRefUsername(dto.Username),
-	)
+	newReferral := dto.ToDomain(adminEntity.GetId())
 
 	// Save new referral
 	_, err = s.CreateReferalUseCase.Execute(ctx, *newReferral, adminEntity)
@@ -75,8 +68,8 @@ func (s *ReferalService) RegisterNewReferal(ctx context.Context, dto dto.Referal
 }
 
 func (s *ReferalService) GetReferalStatistic(ctx context.Context, dto dto.ReferalStatisticDTO, adto dto.ExternalAdminDTO) (allUsers, lastNDays int64, err error) {
-	adminEntity := s.AdminService.GetAdmin(ctx, adto)
-	if adminEntity == (entity.Admin{}) {
+	adminEntity, err := s.AdminService.GetAdmin(ctx, adto)
+	if err != nil {
 		return 0, 0, fmt.Errorf("adminEntity not found")
 	}
 	s.logger.Info("adminEntity was found, trying to collect referal statistic")
@@ -87,6 +80,21 @@ func (s *ReferalService) GetReferalStatistic(ctx context.Context, dto dto.Refera
 	}
 
 	return allUsers, lastNDays, nil
+}
+
+func (s *ReferalService) GetReferalByRefLink(ctx context.Context, referalLink string, adto dto.ExternalAdminDTO) (referal entity.Referal, err error) {
+	adminEntity, err := s.AdminService.GetAdmin(ctx, adto)
+	if err != nil {
+		return entity.Referal{}, fmt.Errorf("adminEntity not found")
+	}
+	s.logger.Info("adminEntity was found, trying to get referal")
+
+	referal, err = s.ReadRepo.GetReferalByRefLink(ctx, referalLink, adminEntity)
+
+	if err != nil {
+		return entity.Referal{}, fmt.Errorf("adminEntity not found")
+	}
+	return referal, nil
 }
 
 func (s *ReferalService) generateReferalLink(tgId, inServiceId, adminId int64) string {

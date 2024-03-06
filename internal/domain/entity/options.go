@@ -16,6 +16,13 @@ func WithRefReferalLink(referalLink string) RefOpt {
 	}
 }
 
+func WithRefId(id int64) RefOpt {
+	return func(ref *Referal) *Referal {
+		ref.id = id
+		return ref
+	}
+}
+
 func WithRefInServiceId(inServiceId int64) RefOpt {
 	return func(ref *Referal) *Referal {
 		ref.inServiceId = inServiceId
@@ -72,6 +79,13 @@ type AdmOpts func(adm *Admin) *Admin
 func WithAdmId(id int64) AdmOpts {
 	return func(adm *Admin) *Admin {
 		adm.id = id
+		return adm
+	}
+}
+
+func WithPassword(password string) AdmOpts {
+	return func(adm *Admin) *Admin {
+		adm.password = password
 		return adm
 	}
 }

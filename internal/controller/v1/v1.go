@@ -3,21 +3,21 @@ package v1
 import (
 	"log/slog"
 	"referalMS/internal/config"
-	"referalMS/internal/controller"
+	"referalMS/internal/controller/admin"
 )
 
 type ApiV1 struct {
-	adminService   controller.AdminService
-	referalService controller.ReferalService
-	userService    controller.UserService
+	adminService   admin.AdminService
+	referalService ReferalService
+	userService    UserService
 	cfg            config.Config
 	logger         *slog.Logger
 }
 
 func NewApiV1(
-	adminService controller.AdminService,
-	referalService controller.ReferalService,
-	userService controller.UserService,
+	adminService admin.AdminService,
+	referalService ReferalService,
+	userService UserService,
 	cfg config.Config,
 	logger *slog.Logger,
 ) *ApiV1 {

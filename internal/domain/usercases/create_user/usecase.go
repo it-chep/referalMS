@@ -9,10 +9,12 @@ type CreateUserUseCase struct {
 	repo WriteRepo
 }
 
-func NewCreateUserUseCase(repo WriteRepo) CreateUserUseCase {
-	return CreateUserUseCase{repo: repo}
+func NewCreateUserUseCase(repo WriteRepo) *CreateUserUseCase {
+	return &CreateUserUseCase{
+		repo: repo,
+	}
 }
 
-func (u *CreateUserUseCase) Execute(ctx context.Context, referal entity.Referal, user entity.User, admin entity.Admin) (userId int64, err error) {
-	return u.repo.CreateUser(ctx, referal, user, admin)
+func (u *CreateUserUseCase) Execute(ctx context.Context, user entity.User, admin entity.Admin) (userId int64, err error) {
+	return u.repo.CreateUser(ctx, user, admin)
 }

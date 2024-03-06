@@ -12,13 +12,18 @@ type Admin struct {
 	registrationTime  time.Time
 }
 
-func NewAdmin(login, password, integrationsToken string, opts ...AdmOpts) *Admin {
-	return &Admin{
+func NewAdmin(login, integrationsToken string, opts ...AdmOpts) *Admin {
+	admin := &Admin{
 		login:             login,
-		password:          password,
 		integrationsToken: integrationsToken,
 		lastLogin:         time.Now(),
 	}
+
+	for _, opt := range opts {
+		opt(admin)
+	}
+
+	return admin
 }
 
 func (adm *Admin) GetId() int64 {
@@ -39,6 +44,10 @@ func (adm *Admin) GetIntegrationsToken() string {
 
 func (adm *Admin) GetIntegratorId() int64 {
 	return adm.integratorId
+}
+
+func (adm *Admin) GetLastLogin() time.Time {
+	return adm.lastLogin
 }
 
 type WinnersFilter struct {

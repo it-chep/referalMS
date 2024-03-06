@@ -2,14 +2,14 @@ package read_repo
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"referalMS/internal/domain/entity"
 	"referalMS/internal/storage/dao"
+	"referalMS/pkg/client/postgres"
 )
 
 type UserStorage struct {
-	client *pgxpool.Pool
+	client postgres.Client
 	logger *slog.Logger
 }
 
@@ -95,7 +95,7 @@ func (u *UserStorage) GetAllUsers(ctx context.Context) (users []entity.User, err
 	return users, nil
 }
 
-func NewUserStorage(client *pgxpool.Pool, logger *slog.Logger) *UserStorage {
+func NewUserStorage(client postgres.Client, logger *slog.Logger) *UserStorage {
 	return &UserStorage{
 		client: client,
 		logger: logger,

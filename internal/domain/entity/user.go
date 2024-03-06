@@ -10,12 +10,18 @@ type User struct {
 	referalLink string
 }
 
-func NewUser(tgId, adminId int64, name string) *User {
-	return &User{
+func NewUser(tgId, adminId int64, name string, opts ...UserOpt) *User {
+	u := &User{
 		tgID:    tgId,
 		adminId: adminId,
 		name:    name,
 	}
+
+	for _, opt := range opts {
+		opt(u)
+	}
+
+	return u
 }
 
 func (usr *User) GetName() string {

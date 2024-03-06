@@ -1,6 +1,7 @@
 package entity
 
 type Referal struct {
+	id             int64
 	name           string
 	tgID           int64
 	adminId        int64
@@ -22,6 +23,10 @@ func NewReferal(tgID, adminId int64, name string, opts ...RefOpt) *Referal {
 		opt(ref)
 	}
 	return ref
+}
+
+func (ref *Referal) GetId() int64 {
+	return ref.id
 }
 
 func (ref *Referal) GetName() string {
@@ -50,6 +55,10 @@ func (ref *Referal) GetAllUsers() int64 {
 
 func (ref *Referal) GetLastNDaysUsers() int64 {
 	return ref.usersLastNDays
+}
+
+func (ref *Referal) SetId(id int64) {
+	ref.id = id
 }
 
 func (ref *Referal) SetAllUsers(users int64) {

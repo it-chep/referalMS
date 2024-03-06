@@ -2,35 +2,35 @@ package read_repo
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"referalMS/internal/domain/entity"
 	"referalMS/internal/storage/dao"
+	"referalMS/pkg/client/postgres"
 )
 
 type AdminStorage struct {
-	pgClient *pgxpool.Pool
+	pgClient postgres.Client
 	logger   *slog.Logger
 }
 
-func NewAdminStorage(pgClient *pgxpool.Pool, logger *slog.Logger) *AdminStorage {
+func NewAdminStorage(pgClient postgres.Client, logger *slog.Logger) *AdminStorage {
 	return &AdminStorage{
 		pgClient: pgClient,
 		logger:   logger,
 	}
 }
 
-func (a *AdminStorage) GetAdmin(ctx context.Context, login, password, token string) (adminID int64, err error) {
-	q := `select id from admins a where a.login = $1 and a.password = $2 and a.integrations_token = $3;`
+func (a *AdminStorage) GetAdmin(ctx context.Context, login, token string) (admin entity.Admin, err error) {
+	q := `select id, login, password, integrations_token from admins a where a.login = $1 and a.integrations_token = $3;`
 
 	var adminDAO dao.AdminDAO
 
-	err = a.pgClient.QueryRow(ctx, q, login, password, token).Scan(&adminDAO)
-	adminID = adminDAO.ToDomain().GetId()
+	err = a.pgClient.QueryRow(ctx, q, login, token).Scan(&adminDAO)
+	admin = *adminDAO.ToDomain()
 	if err != nil {
-		return -1, err
+		return entity.Admin{}, err
 	}
-	return adminID, nil
+	return admin, nil
 }
 
 func (a *AdminStorage) GetWinners(ctx context.Context, admin entity.Admin, winnersFilter entity.WinnersFilter) (winners []entity.Referal, err error) {

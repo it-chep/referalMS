@@ -5,11 +5,13 @@ import (
 )
 
 type Admin struct {
-	logger *slog.Logger
+	adminService AdminService
+	logger       *slog.Logger
 }
 
-func NewAdmin(logger *slog.Logger) *Admin {
+func NewAdmin(adminService AdminService, logger *slog.Logger) *Admin {
 	return &Admin{
-		logger: logger,
+		adminService: adminService,
+		logger:       logger,
 	}
 }

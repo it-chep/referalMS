@@ -9,8 +9,8 @@ type CreateReferalUseCase struct {
 	repo WriteRepo
 }
 
-func NewCreateReferalUseCase(repo WriteRepo) CreateReferalUseCase {
-	return CreateReferalUseCase{
+func NewCreateReferalUseCase(repo WriteRepo) *CreateReferalUseCase {
+	return &CreateReferalUseCase{
 		repo: repo,
 	}
 }

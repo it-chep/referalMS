@@ -2,14 +2,14 @@ package read_repo
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"referalMS/internal/domain/entity"
 	"referalMS/internal/storage/dao"
+	"referalMS/pkg/client/postgres"
 )
 
 type ReferalStorage struct {
-	pgClient *pgxpool.Pool
+	pgClient postgres.Client
 	logger   *slog.Logger
 }
 
@@ -40,14 +40,14 @@ func (r *ReferalStorage) GetReferalByID(ctx context.Context, ID, inServiceId int
 	return referal, nil
 }
 
-func (r *ReferalStorage) GetReferalByRefLink(ctx context.Context, inServiceId int64, referalLink string, admin entity.Admin) (referal entity.Referal, err error) {
+func (r *ReferalStorage) GetReferalByRefLink(ctx context.Context, referalLink string, admin entity.Admin) (referal entity.Referal, err error) {
 	q := `select tg_id, name, username, id_in_integration_service
 			from referals r 
 				left join admins a on r.admin_id = a.id 
-			where r.referal_link = $1 and a.login = $2 and r.id_in_integration_service = $3;
+			where r.referal_link = $1 and a.login = $2;
 	`
 	var referalDAO dao.ReferalDAO
-	err = r.pgClient.QueryRow(ctx, q, referalLink, admin.GetLogin(), inServiceId).Scan(&referalDAO)
+	err = r.pgClient.QueryRow(ctx, q, referalLink, admin.GetLogin()).Scan(&referalDAO)
 
 	if err != nil {
 		return entity.Referal{}, err
@@ -94,7 +94,7 @@ func (r *ReferalStorage) GetReferalStatistic(ctx context.Context, tgID int64, ad
 	return allUsers, lastNDays, nil
 }
 
-func NewReferalStorage(pgClient *pgxpool.Pool, logger *slog.Logger) *ReferalStorage {
+func NewReferalStorage(pgClient postgres.Client, logger *slog.Logger) *ReferalStorage {
 	return &ReferalStorage{
 		pgClient: pgClient,
 		logger:   logger,

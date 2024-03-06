@@ -1,5 +1,7 @@
 package dto
 
+import "referalMS/internal/domain/entity"
+
 // ReferalUserDTO representation of referal
 type ReferalUserDTO struct {
 	TgId        int64  `json:"tg_id"`
@@ -24,4 +26,14 @@ type GetReferalStatisticDTO struct {
 	Error     string `json:"error"`
 	AllUsers  int64  `json:"all_users"`
 	LastNDays int64  `json:"last_n_days"`
+}
+
+func (ref *ReferalUserDTO) ToDomain(adminId int64) *entity.Referal {
+	return entity.NewReferal(
+		ref.TgId,
+		adminId,
+		ref.Name,
+		entity.WithRefUsername(ref.Username),
+		entity.WithRefInServiceId(ref.InServiceID),
+	)
 }
