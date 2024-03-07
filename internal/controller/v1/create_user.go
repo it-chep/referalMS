@@ -12,7 +12,6 @@ import (
 func (api *ApiV1) CreateUser(ctx context.Context) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		const op = "controller.controller.v1.CreateUser"
-		var resp response.Response
 		var userDTO dto.TgUserDTO
 
 		externalAdminDTO, _ := request.Context().Value("admin").(dto.ExternalAdminDTO)
@@ -30,6 +29,8 @@ func (api *ApiV1) CreateUser(ctx context.Context) http.HandlerFunc {
 			http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+
+		resp := response.Ok()
 
 		jsonData, err := json.Marshal(resp)
 		if err != nil {

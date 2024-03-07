@@ -12,6 +12,7 @@ create table if not exists admins
     login              text unique,
     password           text,
     integrations_token text,
+    salt               int,
     integrator_id      bigint,
     domain             text,
     active             bool,
@@ -33,13 +34,14 @@ create table if not exists referals
 
 create table if not exists users
 (
-    id                bigserial,
-    admin_id          bigint    not null,
-    tg_id             bigint    not null,
-    registration_time timestamp not null default current_timestamp,
-    referal_link      text,
-    username          text,
-    referal_id        bigint
+    id                        bigserial,
+    admin_id                  bigint    not null,
+    tg_id                     bigint    not null,
+    id_in_integration_service bigint,
+    registration_time         timestamp not null default current_timestamp,
+    referal_link              text,
+    username                  text,
+    referal_id                bigint
 );
 -- +goose StatementEnd
 

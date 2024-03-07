@@ -89,3 +89,10 @@ func WithPassword(password string) AdmOpts {
 		return adm
 	}
 }
+
+func WithSalt(salt int) AdmOpts {
+	return func(adm *Admin) *Admin {
+		adm.salt = salt
+		return adm
+	}
+}

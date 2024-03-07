@@ -39,6 +39,7 @@ func (api *ApiV1) GetWinners(ctx context.Context) http.HandlerFunc {
 
 		for _, winner := range winners {
 			winnerDTO := dto.WinnerReferal{
+				Name:        winner.GetName(),
 				UsersCount:  winner.GetAllUsers(),
 				Username:    winner.GetUsername(),
 				InServiceId: winner.GetInServiceId(),

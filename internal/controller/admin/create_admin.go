@@ -19,10 +19,10 @@ func (admn *Admin) CreateAdmin(ctx context.Context) http.HandlerFunc {
 			http.Error(writer, "Failed to parse JSON", http.StatusBadRequest)
 			return
 		}
-		admn.logger.Info("Start saving admin", adminDTO)
+
 		_, err := admn.adminService.RegisterNewAdmin(ctx, adminDTO)
 		if err != nil {
-			admn.logger.Error(fmt.Sprintf("Error while creating user err: %s op: %s", err, op))
+			admn.logger.Error(fmt.Sprintf("Error while creating admin err: %s op: %s", err, op))
 			http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

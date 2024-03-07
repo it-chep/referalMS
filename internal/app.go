@@ -61,6 +61,7 @@ func NewApp(ctx context.Context) *App {
 
 	app.InitLogger(ctx).
 		InitPgxConn(ctx).
+		InitStorage(ctx).
 		InitUseCases(ctx).
 		InitServices(ctx).
 		InitControllers(ctx)

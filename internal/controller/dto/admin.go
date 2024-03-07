@@ -17,6 +17,7 @@ type AdminDTO struct {
 }
 
 type WinnerReferal struct {
+	Name        string `json:"name"`
 	UsersCount  int64  `json:"users_count"`
 	Username    string `json:"username"`
 	InServiceId int64  `json:"in_service_id"`
@@ -25,7 +26,7 @@ type WinnerReferal struct {
 type GetWinnersResponse struct {
 	Status string          `json:"status"`
 	Error  string          `json:"error"`
-	Users  []WinnerReferal `json:"user"`
+	Users  []WinnerReferal `json:"users"`
 }
 
 func (a *ExternalAdminDTO) ToDomain(password string) *entity.Admin {

@@ -2,16 +2,19 @@ package create_referal
 
 import (
 	"context"
+	"log/slog"
 	"referalMS/internal/domain/entity"
 )
 
 type CreateReferalUseCase struct {
-	repo WriteRepo
+	repo   WriteRepo
+	logger *slog.Logger
 }
 
-func NewCreateReferalUseCase(repo WriteRepo) *CreateReferalUseCase {
+func NewCreateReferalUseCase(repo WriteRepo, logger *slog.Logger) *CreateReferalUseCase {
 	return &CreateReferalUseCase{
-		repo: repo,
+		repo:   repo,
+		logger: logger,
 	}
 }
 

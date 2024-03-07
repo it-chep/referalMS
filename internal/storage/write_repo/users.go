@@ -15,12 +15,12 @@ type WriteUserStorage struct {
 func (u *WriteUserStorage) CreateUser(ctx context.Context, user entity.User, admin entity.Admin) (userID int64, err error) {
 	q := `
 	with r_id as (
-		select id from referal where referal_link = $3
+		select id from referals where referal_link = $3
 	), a_id as (
 		select id from admins where login = $1
 	)
-	insert into user (admin_id, tg_id, referal_link, username, in_service_id ,referal_id) 
-	values (a_id, $2, $3, $4, $5, r_id) returning id;
+	insert into users (admin_id, tg_id, referal_link, username, id_in_integration_service, referal_id) 
+	values ((select id from a_id), $2, $3, $4, $5, (select id from r_id)) returning id;
 	`
 	err = u.client.QueryRow(
 		ctx, q, admin.GetLogin(), user.GetTgId(), user.GetReferalLink(), user.GetUsername(), user.GetInServiceId(),

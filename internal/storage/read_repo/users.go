@@ -2,6 +2,8 @@ package read_repo
 
 import (
 	"context"
+	"errors"
+	"github.com/jackc/pgx/v5"
 	"log/slog"
 	"referalMS/internal/domain/entity"
 	"referalMS/internal/storage/dao"
@@ -20,6 +22,9 @@ func (u *UserStorage) GetUserByID(ctx context.Context, userID int64) (user entit
 
 	err = u.client.QueryRow(ctx, q, userID).Scan(&userDAO)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.User{}, nil
+		}
 		return entity.User{}, err
 	}
 
@@ -29,11 +34,14 @@ func (u *UserStorage) GetUserByID(ctx context.Context, userID int64) (user entit
 }
 
 func (u *UserStorage) GetUserByTgID(ctx context.Context, tgID int64) (user entity.User, err error) {
-	q := "select id, admin_id, username, referal_link from users where tg_id = $1"
+	q := "select admin_id, username, referal_link from users where tg_id = $1"
 	var userDAO dao.UserDAO
 
-	err = u.client.QueryRow(ctx, q, tgID).Scan(&userDAO)
+	err = u.client.QueryRow(ctx, q, tgID).Scan(&userDAO.AdminId, &userDAO.Username, &userDAO.ReferalLink)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.User{}, nil
+		}
 		return entity.User{}, err
 	}
 
@@ -46,8 +54,11 @@ func (u *UserStorage) GetUserByReferalLink(ctx context.Context, referalLink stri
 	q := "select tg_id, admin_id, username, referal_link from users where referal_link = $1"
 	var userDAO dao.UserDAO
 
-	err = u.client.QueryRow(ctx, q, referalLink).Scan(&userDAO)
+	err = u.client.QueryRow(ctx, q, referalLink).Scan(&userDAO.TgId, &userDAO.AdminId, &userDAO.Username, &userDAO.ReferalLink)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.User{}, nil
+		}
 		return entity.User{}, err
 	}
 
@@ -62,6 +73,9 @@ func (u *UserStorage) GetUserByReferalId(ctx context.Context, referalId int64) (
 
 	err = u.client.QueryRow(ctx, q, referalId).Scan(&userDAO)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.User{}, nil
+		}
 		return entity.User{}, err
 	}
 

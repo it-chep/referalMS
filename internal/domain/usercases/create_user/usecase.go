@@ -2,16 +2,19 @@ package create_user
 
 import (
 	"context"
+	"log/slog"
 	"referalMS/internal/domain/entity"
 )
 
 type CreateUserUseCase struct {
-	repo WriteRepo
+	repo   WriteRepo
+	logger *slog.Logger
 }
 
-func NewCreateUserUseCase(repo WriteRepo) *CreateUserUseCase {
+func NewCreateUserUseCase(repo WriteRepo, logger *slog.Logger) *CreateUserUseCase {
 	return &CreateUserUseCase{
-		repo: repo,
+		repo:   repo,
+		logger: logger,
 	}
 }
 

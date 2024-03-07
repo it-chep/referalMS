@@ -19,11 +19,5 @@ func NewCreateAdminUseCase(repo WriteRepo, logger *slog.Logger) *CreateAdminUseC
 }
 
 func (u *CreateAdminUseCase) Execute(ctx context.Context, admin entity.Admin) (adminId int64, err error) {
-	u.logger.Info("23232323")
-	createAdmin, err := u.repo.CreateAdmin(ctx, admin)
-	u.logger.Info("CreateAdminUseCase) Execute", createAdmin, err)
-	if err != nil {
-		return 0, err
-	}
-	return createAdmin, nil
+	return u.repo.CreateAdmin(ctx, admin)
 }

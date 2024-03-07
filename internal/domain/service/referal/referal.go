@@ -38,7 +38,7 @@ func (s *ReferalService) RegisterNewReferal(ctx context.Context, dto dto.Referal
 	if err != nil {
 		return "", fmt.Errorf("adminEntity not found")
 	}
-	s.logger.Info("adminEntity was found, trying to register new referal")
+	s.logger.Info("adminEntity was found, trying to get referal by tg id")
 
 	referal, err := s.ReadRepo.GetReferalByTgID(ctx, dto.TgId, dto.InServiceID, adminEntity)
 	if err != nil {
@@ -46,17 +46,26 @@ func (s *ReferalService) RegisterNewReferal(ctx context.Context, dto dto.Referal
 	}
 
 	if referal != (entity.Referal{}) {
-		return "", fmt.Errorf("referal has registered")
+		s.logger.Warn("referal has registered", referal)
+		return referal.GetReferalLink(), nil
 	}
+	s.logger.Info("referal was not found, trying to register new referal")
 
 	referalLink = s.generateReferalLink(
 		dto.TgId,
 		dto.InServiceID,
 		adminEntity.GetId(),
 	)
-	s.logger.Info("link was generated successfully")
 
-	newReferral := dto.ToDomain(adminEntity.GetId())
+	newReferral := entity.NewReferal(
+		dto.TgId,
+		adminEntity.GetId(),
+		dto.Name,
+		entity.WithRefUsername(dto.Username),
+		entity.WithRefInServiceId(dto.InServiceID),
+		entity.WithRefReferalLink(referalLink),
+	)
+	s.logger.Info("done referal entity, trying to save new referal")
 
 	// Save new referral
 	_, err = s.CreateReferalUseCase.Execute(ctx, *newReferral, adminEntity)

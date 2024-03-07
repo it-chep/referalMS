@@ -6,7 +6,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log/slog"
 	"math/rand"
-	"os"
 	"referalMS/internal/controller/dto"
 	"referalMS/internal/domain/entity"
 	"strconv"
@@ -30,15 +29,19 @@ func NewAdminService(readRepo ReadAdminStorage, createAdminUseCase CreateAdminUs
 }
 
 func (s *AdminService) GetAdmin(ctx context.Context, dto dto.ExternalAdminDTO) (admin entity.Admin, err error) {
+	const op = "internal.domain.service.admin.admin.GetAdmin"
 	admin, err = s.readRepo.GetAdmin(
 		ctx,
 		dto.Login,
 		dto.Token,
 	)
+
 	if err != nil {
 		return entity.Admin{}, err
 	}
-	err = s.checkPassEqualPassHash(dto.Password, admin.GetPassword())
+
+	err = s.checkPassEqualPassHash(dto.Password, admin.GetSalt(), admin.GetPassword())
+
 	if err != nil {
 		return entity.Admin{}, err
 	}
@@ -68,29 +71,37 @@ func (s *AdminService) GetWinners(
 }
 
 func (s *AdminService) RegisterNewAdmin(ctx context.Context, adminDTO dto.AdminDTO) (adminId int64, err error) {
-	hashedPassword, err := s.generatePasswordHash(adminDTO.Password)
-	s.logger.Info("Hashed password", hashedPassword)
+	adminFromRepo, err := s.GetAdmin(ctx, dto.ExternalAdminDTO(adminDTO))
+	if adminFromRepo != (entity.Admin{}) {
+		s.logger.Info(fmt.Sprintf("admin with login %s exist", adminDTO.Login))
+		return -1, err
+	}
+
+	hashedPassword, salt, err := s.generatePasswordHash(adminDTO.Password)
+
 	if err != nil {
 		return -1, err
 	}
-	admin := *entity.NewAdmin(adminDTO.Login, adminDTO.Token, entity.WithPassword(hashedPassword))
+	admin := *entity.NewAdmin(adminDTO.Login, adminDTO.Token, entity.WithPassword(hashedPassword), entity.WithSalt(salt))
+
 	s.logger.Info("admin Entity", admin)
 	adminId, err = s.createAdminUseCase.Execute(ctx, admin)
+
 	if err != nil {
 		return -1, err
 	}
 	return adminId, nil
 }
 
-func (s *AdminService) generatePasswordHash(password string) (string, error) {
+func (s *AdminService) generatePasswordHash(password string) (string, int, error) {
 	rand.Seed(time.Now().UnixNano())
 	salt := rand.Intn(10000)
-	hash, err := bcrypt.GenerateFromPassword([]byte(os.Getenv("PASS_SALT")+password+strconv.Itoa(salt)), weightOfHashing)
+	hash, err := bcrypt.GenerateFromPassword([]byte(password+strconv.Itoa(salt)), weightOfHashing)
 
-	return string(hash), err
+	return string(hash), salt, err
 }
 
-func (s *AdminService) checkPassEqualPassHash(password string, passwordHash string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
+func (s *AdminService) checkPassEqualPassHash(password string, salt int, passwordHash string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password+strconv.Itoa(salt)))
 	return err
 }

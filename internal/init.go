@@ -45,44 +45,63 @@ func (app *App) InitPgxConn(ctx context.Context) *App {
 		log.Fatal(err)
 	}
 	app.pgxClient = client
+	app.logger.Info("init pgxclient", app.pgxClient)
 	return app
 }
 
 func (app *App) InitStorage(ctx context.Context) *App {
 	app.storages.adminReadStorage = read_repo.NewAdminStorage(app.pgxClient, app.logger)
+	app.storages.adminWriteStorage = write_repo.NewWriteAdminStorage(app.pgxClient, app.logger)
 	app.storages.referalWriteStorage = write_repo.NewReferalStorage(app.pgxClient, app.logger)
 	app.storages.referalReadStorage = read_repo.NewReferalStorage(app.pgxClient, app.logger)
 	app.storages.userWriteStorage = write_repo.NewUserStorage(app.pgxClient, app.logger)
 	app.storages.userReadStorage = read_repo.NewUserStorage(app.pgxClient, app.logger)
+
+	app.logger.Info("init admin read storage", app.storages.adminReadStorage)
+	app.logger.Info("init admin write storage", app.storages.adminWriteStorage)
+	app.logger.Info("init referal read storage", app.storages.referalReadStorage)
+	app.logger.Info("init referal write storage", app.storages.referalWriteStorage)
+	app.logger.Info("init user read storage", app.storages.userReadStorage)
+	app.logger.Info("init user write storage", app.storages.userWriteStorage)
+
 	return app
 }
 
 func (app *App) InitUseCases(ctx context.Context) *App {
-	app.useCases.createUserUseCase = create_user.NewCreateUserUseCase(app.storages.userWriteStorage)
-	app.useCases.createReferalUseCase = create_referal.NewCreateReferalUseCase(app.storages.referalWriteStorage)
+	app.useCases.createUserUseCase = create_user.NewCreateUserUseCase(app.storages.userWriteStorage, app.logger)
+	app.useCases.createReferalUseCase = create_referal.NewCreateReferalUseCase(app.storages.referalWriteStorage, app.logger)
 	app.useCases.createAdminUseCase = create_admin.NewCreateAdminUseCase(app.storages.adminWriteStorage, app.logger)
+	app.logger.Info("init admin usecase", app.useCases.createAdminUseCase)
+	app.logger.Info("init referal usecase", app.useCases.createReferalUseCase)
+	app.logger.Info("init user usecase", app.useCases.createUserUseCase)
+
 	return app
 }
 
 func (app *App) InitServices(ctx context.Context) *App {
+	adminService :=
+		admin.NewAdminService(
+			app.storages.adminReadStorage,
+			app.useCases.createAdminUseCase,
+			app.logger,
+		)
+
 	app.services = services{
+		adminService: adminService,
+
 		userService: user.NewUserService(
 			app.useCases.createUserUseCase,
 			app.storages.userReadStorage,
-			app.services.adminService,
+			adminService,
 			app.logger,
 		),
 		referalService: referal.NewReferalService(
 			app.useCases.createReferalUseCase,
 			app.storages.referalReadStorage,
-			app.services.adminService,
-			app.logger,
-		),
-		adminService: admin.NewAdminService(
-			app.storages.adminReadStorage,
-			app.useCases.createAdminUseCase,
+			adminService,
 			app.logger,
 		),
 	}
+	app.logger.Info("init services", app.services)
 	return app
 }

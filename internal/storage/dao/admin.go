@@ -1,29 +1,35 @@
 package dao
 
 import (
+	"fmt"
 	"referalMS/internal/domain/entity"
 )
 
 type AdminDAO struct {
-	id       int64  `sql:"id"`
-	login    string `sql:"login"`
-	password string `sql:"password"`
-	token    string `sql:"token"`
+	Id       int64  `sql:"id"`
+	Login    string `sql:"login"`
+	Password string `sql:"password"`
+	Token    string `sql:"integrations_token"`
+	Salt     int    `sql:"salt"`
 }
 
-func NewAdminDAO(id int64, login, password, token string) *AdminDAO {
+func NewAdminDAO(id int64, login, password, token string, salt int) *AdminDAO {
 	return &AdminDAO{
-		id:       id,
-		login:    login,
-		password: password,
-		token:    token,
+		Id:       id,
+		Login:    login,
+		Password: password,
+		Token:    token,
+		Salt:     salt,
 	}
 }
 
 func (dao *AdminDAO) ToDomain() *entity.Admin {
+	fmt.Println(dao, dao.Id, dao.Login, dao.Password, dao.Password)
 	return entity.NewAdmin(
-		dao.login,
-		dao.token,
-		entity.WithPassword(dao.password),
+		dao.Login,
+		dao.Token,
+		entity.WithPassword(dao.Password),
+		entity.WithSalt(dao.Salt),
+		entity.WithAdmId(dao.Id),
 	)
 }

@@ -8,6 +8,7 @@ type Admin struct {
 	password          string
 	integrationsToken string
 	integratorId      int64
+	salt              int
 	lastLogin         time.Time
 	registrationTime  time.Time
 }
@@ -48,6 +49,10 @@ func (adm *Admin) GetIntegratorId() int64 {
 
 func (adm *Admin) GetLastLogin() time.Time {
 	return adm.lastLogin
+}
+
+func (adm *Admin) GetSalt() int {
+	return adm.salt
 }
 
 type WinnersFilter struct {

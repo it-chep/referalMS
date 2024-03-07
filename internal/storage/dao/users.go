@@ -3,13 +3,13 @@ package dao
 import "referalMS/internal/domain/entity"
 
 type UserDAO struct {
-	tgId        int64  `sql:"tg_id"`
-	adminId     int64  `sql:"admin_id"`
-	inServiceId int64  `sql:"in_service_id"`
-	referalId   int64  `sql:"referal_id"`
-	name        string `sql:"name"`
-	username    string `sql:"username"`
-	referalLink string `sql:"referal_link"`
+	TgId        int64  `sql:"tg_id"`
+	AdminId     int64  `sql:"admin_id"`
+	InServiceId int64  `sql:"in_service_id"`
+	ReferalId   int64  `sql:"referal_id"`
+	Name        string `sql:"name"`
+	Username    string `sql:"username"`
+	ReferalLink string `sql:"referal_link"`
 }
 
 func NewUserDAO() *UserDAO {
@@ -18,9 +18,8 @@ func NewUserDAO() *UserDAO {
 
 func (dao *UserDAO) ToDomain() *entity.User {
 	return entity.NewUser(
-		dao.tgId,
-		dao.adminId,
-		dao.name,
-		//entity.WithUsrReferalId(dao.referalId),
+		dao.TgId,
+		dao.AdminId,
+		dao.Name,
 	)
 }

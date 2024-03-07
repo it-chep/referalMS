@@ -63,7 +63,7 @@ func (r *RestController) InitController(ctx context.Context) {
 	})
 
 	r.router.Route("/admin", func(r chi.Router) {
-		r.Post("/", admn.CreateAdmin(ctx))
+		r.Post("/create_admin/", admn.CreateAdmin(ctx))
 	})
 
 	r.logger.Info(fmt.Sprintf("init controller %s", op))
