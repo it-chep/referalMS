@@ -1,5 +1,4 @@
 env: "prod"
-storage_path: "43323"
 http_server:
   address: "0.0.0.0:8000"
   timeout: 4s
@@ -8,11 +7,11 @@ http_server:
   password: "1231323"
 
 storage:
-  host: {{ .Values.DB_HOST }}
-  post: {{ .Values.DB_PORT }}
-  database: {{ .Values.DB_NAME }}
-  user: {{ .Values.DB_USER }}
-  password: {{ .Values.DB_PASSWORD }}
+  host: "${DB_HOST}"
+  port: "${DB_PORT}"
+  database: "${DB_NAME}"
+  user: "${DB_USER}"
+  password: "${DB_PASSWORD}"
   max_retry: 5
   retry_timeout: 5s
 

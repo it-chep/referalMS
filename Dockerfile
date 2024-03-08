@@ -3,5 +3,6 @@ RUN apk add ffmpeg
 WORKDIR /app
 COPY . .
 RUN go mod download
-EXPOSE 8080
-CMD ["go", "run", "cmd/main.go"]
+
+EXPOSE 8000
+CMD ["go", "run", "cmd/referal-server/local/main.go"]

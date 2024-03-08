@@ -20,30 +20,28 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
 
-#  referal-app:
-#    build: .
-#    ports:
-#      - "8000:8000"
-#    expose:
-#      - 8000
-#    container_name: referal-app
-#    networks:
-#      - referal-network
-#    depends_on:
-#      - referal-postgres
-#    environment:
-#      - C_FORCE_ROOT='true'
-#      - PYTHONUNBUFFERED=1
-#      - LOCAL_PYTEST=1
-#      - DB_USER=${DB_USER}
-#      - DB_PASSWORD=${DB_PASSWORD}
-#      - DB_NAME=${DB_NAME}
-#      - DB_PORT=${DB_PORT}
-#      - DB_HOST=${DB_HOST}
-#      - BOT_TOKEN=${BOT_TOKEN}
-#      - WEBHOOK_URL=${WEBHOOK_URL}
-#      - DEBUG=${DEBUG}
-#      - ENVIRONMENT_TYPE=docker
+  referal-app:
+    build: .
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    container_name: referal-app
+    networks:
+      - referal-network
+    depends_on:
+      - referal-postgres
+    environment:
+      - C_FORCE_ROOT='true'
+      - PYTHONUNBUFFERED=1
+      - LOCAL_PYTEST=1
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - DEBUG=${DEBUG}
+      - ENVIRONMENT_TYPE=docker
 
 
 networks:
